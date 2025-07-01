@@ -166,7 +166,8 @@ def get_ai_response_stream(prompt):
                         try:
                             json_data = json.loads(json_part)
                         except json.JSONDecodeError as e:
-                            yield f"❌ JSON Decode Error: {str(e)}"
+                            print(f"[JSON Decode Error] {e} | Data: {json_part}")
+                            yield "❌ Sorry, there was a problem understanding the server response."
                             continue
 
                         if 'choices' in json_data:
@@ -179,9 +180,11 @@ def get_ai_response_stream(prompt):
             st.toast(f"Response time: {time.time()-start_time:.2f}s", icon="⏱️")
 
     except requests.exceptions.RequestException as e:
-        yield f"❌ Request Error: {str(e)}"
+        print(f"[Request Error] {e}")
+        yield "❌ Network error. Please check your connection or try again later."
     except Exception as e:
-        yield f"❌ API Error: {str(e)}"
+        print(f"[API Error] {e}")
+        yield "❌ Something went wrong. Please try again or contact support."
 
 
 
@@ -352,6 +355,5 @@ if prompt := st.chat_input("Ask me anything... (or use voice input above)"):
     # Trim message history
     if len(st.session_state.messages) > 50:
         st.session_state.messages = st.session_state.messages[-30:]
-        
-        
-        
+
+
